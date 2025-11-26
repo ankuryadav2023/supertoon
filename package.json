@@ -1,6 +1,6 @@
 {
   "name": "supertoon",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Optimized TOON encoding for complex JSON data",
   "type": "module",
   "main": "index.js",
