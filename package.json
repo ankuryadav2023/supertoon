@@ -1,0 +1,24 @@
+{
+  "name": "supertoon",
+  "version": "1.0.0",
+  "description": "Optimized TOON encoding for complex JSON data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankuryadav2023/supertoon.git"
+  },
+  "author": "Ankur Yadav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ankuryadav2023/supertoon/issues"
+  },
+  "homepage": "https://github.com/ankuryadav2023/supertoon#readme",
+  "dependencies": {
+    "@toon-format/toon": "^2.0.0",
+    "deep-cleaner": "^2.0.0-alpha.3",
+    "lodash": "^4.17.21"
+  }
+}
