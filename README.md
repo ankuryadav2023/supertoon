@@ -27,7 +27,7 @@ npm install supertoon
 ### Step 1: Import
 
 ```javascript
-import { encode } from 'supertoon';
+import { encode, decode } from 'supertoon';
 ```
 
 ### Step 2: Prepare Your Data
@@ -55,6 +55,8 @@ const result = encode(data, {
 });
 ```
 
+> **⚠️ Important for Decoding:** If you plan to decode the data later and need to recover the original structure, set `allowCleaning: false`. Empty/null values (`null`, `undefined`, `""`, `{}`, `[]`) that are removed during encoding **cannot be restored** during decoding.
+
 ## 📤 Return Value
 
 The `encode` function returns an object containing:
@@ -65,6 +67,80 @@ The `encode` function returns an object containing:
   keysShortForms: {...},          // Key mapping (if allowShortForms: true)
   replaceLongStringsTable: {...}  // String table (if replaceLongStrings: true)
 }
+```
+
+## 🔄 Decoding
+
+### Basic Usage
+
+To decode and restore your original JSON structure:
+
+```javascript
+import { encode, decode } from 'supertoon';
+
+// Encode
+const originalData = {
+  name: "John",
+  phone: "1234567890",
+  metadata: null,
+  tags: []
+};
+
+const encoded = encode(originalData);
+
+// Decode - pass the entire encoded result object
+const decoded = decode(encoded);
+console.log(decoded);
+```
+
+### Important Notes
+
+1. **Lost Values:** Values removed by `allowCleaning` (empty/null values) **cannot be restored**. They are permanently removed during encoding.
+
+2. **For Full Recovery:** If you need to decode and get back the exact original structure, set `allowCleaning: false`:
+
+```javascript
+// Encode without cleaning to preserve all values
+const encoded = encode(originalData, {
+  allowCleaning: false  // Preserve null, undefined, empty strings/arrays/objects
+});
+
+// Now decode will restore the complete structure
+const decoded = decode(encoded);
+```
+
+3. **Required Data:** The `decode` function requires the complete encoded result object (including `encodedObj`, and optionally `keysShortForms` and `replaceLongStringsTable`).
+
+### Decode Example
+
+```javascript
+const data = {
+  businessDetails: {
+    companyName: "Acme Corp",
+    description: "A very long description that exceeds 50 characters and will be extracted into the string table"
+  },
+  estimateStatus: "pending",
+  metadata: null
+};
+
+// Encode
+const result = encode(data);
+// {
+//   encodedObj: "...",
+//   keysShortForms: { businessDetails: "b", companyName: "c", ... },
+//   replaceLongStringsTable: { "@S1": "A very long description..." }
+// }
+
+// Decode
+const restored = decode(result);
+// {
+//   businessDetails: {
+//     companyName: "Acme Corp",
+//     description: "A very long description..."
+//   },
+//   estimateStatus: "pending"
+//   // Note: metadata: null is lost if allowCleaning was true
+// }
 ```
 
 ## 💡 Use Cases

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { encode as toonEncode } from '@toon-format/toon';
+import { encode as toonEncode, decode as toonDecode } from '@toon-format/toon';
 import cleaner from 'deep-cleaner';
 
 function getAllKeys(obj, seen = new Set()) {
@@ -64,6 +64,19 @@ function replaceLargeStrings(obj, threshold = 50, seen = new Map(), table = {}) 
   return obj;
 }
 
+function restoreLargeStrings(obj, table) {
+  if (_.isArray(obj)) {
+    return obj.map((value) => restoreLargeStrings(value, table));
+  }
+  if (_.isPlainObject(obj)) {
+    return _.mapValues(obj, (value) => restoreLargeStrings(value, table));
+  }
+  if (_.isString(obj) && obj.startsWith('@S')) {
+    return table[obj] ?? obj;
+  }
+  return obj;
+}
+
 export function encode(obj, options = {}) {
   const {
     allowShortForms = true,
@@ -104,3 +117,26 @@ export function encode(obj, options = {}) {
 
   return responseObj;
 }
+
+export function decode(encodedResult) {
+  const { encodedObj, keysShortForms, replaceLongStringsTable } = encodedResult;
+
+  if (!encodedObj) {
+    throw new Error('encodedObj is required for decoding');
+  }
+
+  let decodedObj = toonDecode(encodedObj);
+
+  if (replaceLongStringsTable && Object.keys(replaceLongStringsTable).length > 0) {
+    decodedObj = restoreLargeStrings(decodedObj, replaceLongStringsTable);
+  }
+
+  if (keysShortForms && Object.keys(keysShortForms).length > 0) {
+    const reversedKeysShortForms = _.invert(keysShortForms);
+    decodedObj = objectRenameKeys(decodedObj, reversedKeysShortForms);
+  }
+
+  return decodedObj;
+}
+
+export default { encode, decode };
