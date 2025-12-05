@@ -78,14 +78,6 @@ To decode and restore your original JSON structure:
 ```javascript
 import { encode, decode } from 'supertoon';
 
-// Encode
-const originalData = {
-  name: "John",
-  phone: "1234567890",
-  metadata: null,
-  tags: []
-};
-
 const encoded = encode(originalData);
 
 // Decode - pass the entire encoded result object
@@ -110,38 +102,6 @@ const decoded = decode(encoded);
 ```
 
 3. **Required Data:** The `decode` function requires the complete encoded result object (including `encodedObj`, and optionally `keysShortForms` and `replaceLongStringsTable`).
-
-### Decode Example
-
-```javascript
-const data = {
-  businessDetails: {
-    companyName: "Acme Corp",
-    description: "A very long description that exceeds 50 characters and will be extracted into the string table"
-  },
-  estimateStatus: "pending",
-  metadata: null
-};
-
-// Encode
-const result = encode(data);
-// {
-//   encodedObj: "...",
-//   keysShortForms: { businessDetails: "b", companyName: "c", ... },
-//   replaceLongStringsTable: { "@S1": "A very long description..." }
-// }
-
-// Decode
-const restored = decode(result);
-// {
-//   businessDetails: {
-//     companyName: "Acme Corp",
-//     description: "A very long description..."
-//   },
-//   estimateStatus: "pending"
-//   // Note: metadata: null is lost if allowCleaning was true
-// }
-```
 
 ## 💡 Use Cases
 
